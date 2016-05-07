@@ -1,0 +1,125 @@
+---
+title: "Grey’s Anatomy Graph Analysis"
+author: "Lidan Hifi and Hagai Levi"
+date: "9 April 2016"
+output:
+  html_document:
+    keep_md: yes
+    toc: true
+---
+
+This is the third assignment in introduction to data science course at Ben Gurion University, May 2016.
+
+The main idea of this assignment is analyzing networks- basic metrics of graphs and clustering.   In this assignment we'll make some research on Grey's anatomy characters.
+
+```{r global_options, setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE) # remove `##` from prints
+library(igraph)
+setwd("~/Projects/bgu/greys_anatomy")
+```
+
+# Loading data
+The graph represent relationships between characters in Grey's anatomy.
+It is represented by a two-columns csv file, contains [from, to] pairs.
+```{r}
+ga.data <- read.csv('ga_edgelist.csv', header = TRUE)
+g <- graph.data.frame(ga.data, directed = FALSE)
+
+# remove self loops
+g <- simplify(g)
+```
+
+# Data exploration
+We'll start with a basic data exploration in order to understand the given dataset and the structure of the graph.
+Basic exploration:
+```{r}
+head(ga.data)
+```
+
+characters (graph vertices):
+```{r}
+V(g)$name
+```
+
+connections between characters:
+```{r}
+summary(g)
+```
+
+graph visualization:
+```{r}
+# set seed to make the layout reproducible
+set.seed(100)
+default_layout = layout.fruchterman.reingold(g)
+plot(g, layout = default_layout)
+```
+
+## Degree score
+```{r}
+degree.score <- degree(g)
+V(g)$color <- "#d08bcd"
+plot(g, layout = default_layout, vertex.size=degree.score * 4, asp=FALSE)
+degree.score
+```
+
+## Closeness centrality
+```{r}
+g.closeness <- closeness(g)
+V(g)$color <- "#d08bcd"
+plot(g, layout = default_layout, vertex.size=g.closeness * 4000, asp=FALSE)
+g.closeness
+which.max(g.closeness)
+```
+
+**Torres** is the most central by closeness centrality metric.
+
+## Betweeness centrality
+```{r}
+g.betweenness <- betweenness(g)
+V(g)$color <- "#d08bcd"
+plot(g, layout = default_layout, vertex.size=g.betweenness / 5, asp=FALSE)
+g.betweenness
+which.max(g.betweenness)
+```
+
+**Sloan** is the most central by betweenness centrality metric.
+
+## Eigenvector centrality
+```{r}
+g.eigen_values <- centr_eigen(g)
+V(g)$color <- "#d08bcd"
+plot(g, layout = default_layout, vertex.size=g.eigen_values$vector * 10, asp=FALSE)
+g.eigen_values$vector
+V(g)[which.max(g.eigen_values$vector)]
+```
+
+**Karev** is the most central by eigenvector centrality metric.
+
+# Community Clustering
+
+## Walktrap clustering
+Find clusters using the `walktrap` algorithm.
+```{r}
+community <- walktrap.community(g)
+plot(g, layout=default_layout, vertex.size=5, vertex.color=community$membership, asp=FALSE)
+
+# number of clusters and their size
+sizes(community)
+
+# modularity
+modularity(community)
+```
+
+
+## Edge-betweenness clustering
+Find clusters using the `edge betweenness` algorithm.
+```{r}
+community <- edge.betweenness.community(g)
+plot(g, layout=default_layout, vertex.size=5, vertex.color=community$membership, asp=FALSE)
+
+# number of clusters and their size
+sizes(community)
+
+# modularity
+modularity(community)
+```
