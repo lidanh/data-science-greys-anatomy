@@ -4,4 +4,4 @@ This is the third assignment in introduction to data science course at Ben Gurio
 
 The main idea of this assignment is analyzing networks- basic metrics of graphs and clustering.   In this assignment we'll make some research on Grey's anatomy characters.
 
-You can fine the full report [here](https://github.com/lidanh/data-science-greys-anatomy/blob/master/Greys_anatomy.md).
+You can find the full report [here](https://github.com/lidanh/data-science-greys-anatomy/blob/master/Greys_anatomy.md).
